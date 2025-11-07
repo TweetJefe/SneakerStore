@@ -1,0 +1,144 @@
+services:
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8083-8083"
+    depends_on:
+      - user-service
+      - cart-service
+      - inventories-service
+      - orderitems-service
+      - order-service
+      - payment-service
+      - product-service
+      - review-service
+      - shipment-service
+    networks:
+      - app-network
+  user-service:
+    build: ./user
+    container_name: user-service
+    depends_on:
+      main-db:
+        condition: service_started
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgres://main-db:5432/userdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - app-network
+  cart-service:
+    build: ./cart
+    container_name: cart-service
+    depends_on:
+      main-db:
+        condition: service_started
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgres://main-db:5432/cartdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - app-network
+  inventories-service:
+    build: ./inventories
+    container_name: inventories-service
+    depends_on:
+      main-db:
+        condition: service_started
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgres://main-db:5432/inventoriesdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - app-network
+  orderitems-service:
+    build: ./orderitems
+    container_name: orderitems-service
+    depends_on:
+      main-db:
+        condition: service_started
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgres://main-db:5432/orderitemsdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - app-network
+  order-service:
+    build: ./orders
+    container_name: order-service
+    depends_on:
+      main-db:
+        condition: service_started
+    ports:
+      - "8088:8088"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgres://main-db:5432/orderdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - app-network
+  payment-service:
+    build: ./payments
+    container_name: payment-service
+    depends_on:
+      main-db:
+        condition: service_started
+    ports:
+      - "8089:8089"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgres://main-db:5432/paymentdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - app-network
+  product-service:
+    build: ./products
+    container_name: product-service
+    depends_on:
+      main-db:
+        condition: service_started
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgres://main-db:5432/productdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - app-network
+  review-service:
+    build: ./reviews
+    container_name: review-service
+    depends_on:
+      main-db:
+        condition: service_started
+    ports:
+      - "8091:8091"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgres://main-db:5432/reviewdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - app-network
+  shipment-service:
+    build: ./shipments
+    container_name: shipment-service
+    depends_on:
+      main-db:
+        condition: service_started
+    ports:
+      - "8092:8092"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgres://main-db:5432/shipmentdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - app-network
