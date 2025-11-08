@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8084
 
 spring:
   datasource:
@@ -13,7 +13,7 @@ springdoc:
     enabled: true
     path: /api/docs
   swagger-ui:
-    enabled: true
+    enbaled: true
     config-url: /api/docs
 logging:
   level:
