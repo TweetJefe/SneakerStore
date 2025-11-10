@@ -4,5 +4,5 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="db/changelog/09-01-changelog.xml"/>
+    <include file="/db/changelog/001-create-shipment-table.xml"/>
 </databaseChangeLog>
