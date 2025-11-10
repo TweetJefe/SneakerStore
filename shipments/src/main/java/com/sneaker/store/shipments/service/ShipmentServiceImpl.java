@@ -1,6 +1,8 @@
 package com.sneaker.store.shipments.service;
 
+import com.sneaker.store.shipments.dto.GetShipmentDTO;
 import com.sneaker.store.shipments.dto.ShipmentDTO;
+import com.sneaker.store.shipments.dto.UpdateShipmentDTO;
 import com.sneaker.store.shipments.enums.Status;
 import com.sneaker.store.shipments.exceptions.NullableViolation;
 import com.sneaker.store.shipments.exceptions.ServerException;
@@ -11,6 +13,7 @@ import com.sneaker.store.shipments.repository.ShipmentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.sql.Update;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +32,9 @@ public class ShipmentServiceImpl implements ShipmentService{
     @Override
     public void createShipment(ShipmentDTO dto){
         Shipment shipment = mapper.toEntity(dto);
+
+        shipment.setStatus(Status.PENDING);
+        shipment.setCreatedAt(LocalDateTime.now());
         saveShipment(shipment);
     }
 
@@ -53,19 +59,19 @@ public class ShipmentServiceImpl implements ShipmentService{
     }
 
     @Override
-    public ShipmentDTO getShipmentByOrderId(Long orderId) {
-        Shipment shipment = shipmentRepository.findByOrderId(orderId)
+    public GetShipmentDTO getShipmentByOrderNumber(String orderNumber) {
+        Shipment shipment = shipmentRepository.findByOrderNumber(orderNumber)
                 .orElseThrow(() -> new EntityNotFoundException("Shipment fot the order is not found"));
-        return  mapper.toDTO(shipment);
+        return  mapper.toGetDTO(shipment);
     }
 
     @Override
-    public ShipmentDTO updateStatus (String shipmentNumber, Status status){
-        Shipment shipment = shipmentRepository.findByOrderNumber(shipmentNumber)
+    public UpdateShipmentDTO updateStatus (String orderNumber, Status status){
+        Shipment shipment = shipmentRepository.findByOrderNumber(orderNumber)
                 .orElseThrow(() -> new EntityNotFoundException("Shipment fot the order is not found"));
         shipment.setStatus(status);
         shipment.setUpdatedAt(LocalDateTime.now());
         saveShipment(shipment);
-        return mapper.toDTO(shipment);
+        return mapper.toUpdateDTO(shipment);
     }
 }

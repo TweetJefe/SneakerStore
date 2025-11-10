@@ -14,5 +14,5 @@ public interface ShipmentRepository {
 
     Optional<Shipment> findByOrderId(Long orderId);
 
-    Optional<Shipment> findByOrderNumber(String shipmentNumber);
+    Optional<Shipment> findByOrderNumber(String orderNumber);
 }

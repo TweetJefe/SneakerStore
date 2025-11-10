@@ -12,9 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -29,7 +26,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/get")
-    public ResponseEntity<OrderDTO> getOrder(@PathVariable String orderId) {
+    public ResponseEntity<OrderDTO> getOrder(@PathVariable Long orderId) {
         return ResponseEntity.ok(service.getOrder(orderId));
     }
 

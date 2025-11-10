@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 public interface OrderService {
     String createOrder(OrderCreateDTO dto);
     void saveOrder(Order order);
-    OrderDTO getOrder(String orderId);
+    OrderDTO getOrder(Long orderId);
     OrderDTO cancelOrder(String orderId);
     Page<OrderDTO> getOrdersByCustomer(Long customerId, Pageable pageable);
 }

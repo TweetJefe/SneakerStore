@@ -1,14 +1,17 @@
 package com.sneaker.store.shipments.service;
 
 
+import com.sneaker.store.shipments.dto.GetShipmentDTO;
 import com.sneaker.store.shipments.dto.ShipmentDTO;
+import com.sneaker.store.shipments.dto.UpdateShipmentDTO;
 import com.sneaker.store.shipments.enums.Status;
 import com.sneaker.store.shipments.model.Shipment;
+import org.hibernate.sql.Update;
 
 public interface ShipmentService{
     void createShipment(ShipmentDTO dto);
     void saveShipment(Shipment shipment);
 
-    ShipmentDTO getShipmentByOrderId(Long orderId);
-    ShipmentDTO updateStatus(String shipmentNumber, Status status);
+    GetShipmentDTO getShipmentByOrderNumber(String orderNumber);
+    UpdateShipmentDTO updateStatus(String orderNumber, Status status);
 }

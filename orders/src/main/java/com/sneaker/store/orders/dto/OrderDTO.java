@@ -10,7 +10,6 @@ public record OrderDTO (
         List<String>items,
         int quantity,
         LocalDateTime orderDate,
-        Long customerId,
         String name,
         String email,
         String phone,

@@ -12,9 +12,6 @@ public record ShipmentDTO(
         String recipientName,
         String recipientEmail,
         Address address,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        LocalDateTime deliveredAt,
         LocalDateTime estimatedDeliveryDate,
         String notes
 ) {
