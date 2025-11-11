@@ -76,8 +76,8 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() ->  new EntityNotFoundException(orderId));
         order.setStatus(Status.CANCELLED);
-        Order saved = orderRepository.save(order);
-        return orderMapper.toDTO(saved);
+        saveOrder(order);
+        return orderMapper.toDTO(order);
     }
 
     @Transactional (readOnly = true)

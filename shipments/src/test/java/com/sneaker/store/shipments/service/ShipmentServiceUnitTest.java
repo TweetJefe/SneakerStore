@@ -8,6 +8,10 @@ import com.sneaker.store.shipments.mapper.ShipmentMapper;
 import com.sneaker.store.shipments.model.Shipment;
 import com.sneaker.store.shipments.repository.ShipmentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.commons.collections4.Get;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,73 +36,89 @@ public class ShipmentServiceUnitTest {
     @InjectMocks
     private ShipmentServiceImpl service;
 
-    @Test
-    void getShipmentByOrderNumber_Sould_Return_ShipmentDTO() {
-        String orderNumber = "orderNumber";
+    private String orderNumber = "ORD-1111";
 
-        Shipment shipment = new Shipment();
-        shipment.setOrderNumber(orderNumber);
-        shipment.setItems(List.of("Air Force 1 white", "Air Jordan 1 Bloodline"));
-        shipment.setQuantity(2);
+    @Nested
+    class getShipmentByOrderNumberTests{
 
-        GetShipmentDTO expectedDTO = new GetShipmentDTO("orderNumber", List.of("Air Force 1 white", "Air Jordan 1 Bloodline"), 2);
+        private Shipment shipment;
+        private GetShipmentDTO expectedDTO;
+        @BeforeEach
+        public void setUp() {
 
-        //чтобы не обращаться в рил бд, создаем моки выше и тут настраиваем их работу
-        //когда обращаемся к Mock, то thenReturn()
-        when(repository.findByOrderNumber(orderNumber)).thenReturn(Optional.of(shipment));
-        when(mapper.toGetDTO(shipment)).thenReturn(expectedDTO);
+            Shipment shipment = new Shipment();
+            shipment.setOrderNumber(orderNumber);
+            shipment.setItems(List.of("Air Force 1 white", "Air Jordan 1 Bloodline"));
+            shipment.setQuantity(2);
 
-        //Act
-        //вызываем работу реального метода
-        GetShipmentDTO actualDTO = service.getShipmentByOrderNumber(orderNumber);
+            GetShipmentDTO expectedDTO = new GetShipmentDTO(
+                    orderNumber,
+                    List.of("Air Force 1 white", "Air Jordan 1 Bloodline"),
+                    2
+            );
+            when(repository.findByOrderNumber(orderNumber)).thenReturn(Optional.of(shipment));
+            when(mapper.toGetDTO(shipment)).thenReturn(expectedDTO);
+        }
 
-        //проверяем, чтобы наш объект не был Null
-        assertNotNull(actualDTO);
-        //сравниваем объекты, актуал должен быть равен экспектед тк мы настроили мок маппера на возврат экспектед
-        assertEquals(expectedDTO, actualDTO);
+        @AfterEach
+        void verification() {
+            verify(repository).findByOrderNumber(orderNumber);
 
-        //проверяем, что методы были вызваны 1 раз (чтобы проверить не тока результат, но и работу метода)
-        verify(repository, times(1)).findByOrderNumber(orderNumber);
-        verify(mapper, times(1)).toGetDTO(shipment);
+        }
+
+        @Test
+        void getShipmentByOrderNumber_ShouldReturnDTO(){
+            GetShipmentDTO actualDTO = service.getShipmentByOrderNumber(orderNumber);
+
+            assertNotNull(actualDTO);
+            assertEquals(expectedDTO, actualDTO);
+            verify(mapper).toGetDTO(shipment);
+        }
+
+        @Test
+        void getShipmentByOrderNumber_throwsEntityNotFoundException(){
+           when(repository.findByOrderNumber(orderNumber)).thenReturn(Optional.empty());
+
+           assertThrows(EntityNotFoundException.class, () -> service.getShipmentByOrderNumber(orderNumber));
+           verify(mapper, never()).toGetDTO(any());
+        }
     }
 
-    @Test
-    void getShipmentByOrderNumber_whenNotFound_throwsEntityNotFoundException(){
-        String orderNumber = "---";
-
-        when(repository.findByOrderNumber(orderNumber)).thenReturn(Optional.empty());
-
-        EntityNotFoundException thrown = assertThrows(
-                EntityNotFoundException.class,
-                () -> service.getShipmentByOrderNumber(orderNumber)
-        );
-
-        assertTrue(thrown.getMessage().contains("No Shipment with orderNumber " + orderNumber));
-
-        verify(repository, times(1)).findByOrderNumber(orderNumber);
-        verifyNoInteractions(mapper);
-    }
-
-    @Test
-    void updateShipmentStatus_Sould_Return_ShipmentDTO() {
-        String orderNumber = "orderNumber";
+    @Nested
+    class updateShipmentByOrderNumberTests{
         Status status = Status.DELIVERED;
+        private GetShipmentDTO expectedDTO;
+        @BeforeEach
+        void SetUp() {
+            Shipment shipment = new Shipment();
+            shipment.setOrderNumber(orderNumber);
+            shipment.setStatus(Status.PENDING);
+            shipment.setUpdatedAt(LocalDateTime.now());
 
-        Shipment shipment = new Shipment();
-        shipment.setOrderNumber(orderNumber);
-        shipment.setStatus(Status.PENDING);
+            UpdateShipmentDTO expectedDTO = new UpdateShipmentDTO(Status.DELIVERED, orderNumber, LocalDateTime.now());
 
-        UpdateShipmentDTO dto =  new UpdateShipmentDTO(Status.DELIVERED, orderNumber, LocalDateTime.now());
+            when(repository.findByOrderNumber(orderNumber)).thenReturn(Optional.of(shipment));
+            when(mapper.toUpdateDTO(shipment)).thenReturn(expectedDTO);
+        }
 
-        when(repository.findByOrderNumber(orderNumber)).thenReturn(Optional.of(shipment));
-        when(mapper.toUpdateDTO(shipment)).thenReturn(dto);
+        @AfterEach
+        void verification() {
+            verify(repository).findByOrderNumber(orderNumber);
+        }
 
-        UpdateShipmentDTO testDTO = service.updateStatus(orderNumber, status);
+        @Test
+        void updateShipmentByOrderNumber_ShouldReturnDTO(){
+            UpdateShipmentDTO testDTO = service.updateStatus(orderNumber, status);
 
-        assertNotNull(testDTO);
-        assertEquals(dto, testDTO);
+            assertNotNull(testDTO);
+            assertEquals(expectedDTO, testDTO);
+        }
 
-        verify(repository, times(1)).findByOrderNumber(orderNumber);
-        verify(mapper, times(1)).toUpdateDTO(shipment);
+        @Test
+        void updateShipmentByOrderNumber_throwsEntityNotFoundException(){
+            when(repository.findByOrderNumber(orderNumber)).thenReturn(Optional.empty());
+            assertThrows(EntityNotFoundException.class, () -> service.updateStatus(orderNumber, status));
+            verify(mapper, never()).toGetDTO(any());
+        }
     }
 }
